@@ -13,8 +13,8 @@ public class TemperaturesArray {
         // if currently temperatures are empty, make them of size 1
         int availableFrom = ArrayUtils.indexOf(array, lowerBoundary);
         // increase the size until it is large enough to fit new data
-        while (availableFrom != -1 && (size - availableFrom)<
-                lengthOfAddedElements) {
+        while (availableFrom != -1 && (size - availableFrom)
+                < lengthOfAddedElements) {
             size = size * 2;
             double[] tempArray = new double[size];
             Arrays.fill(tempArray, lowerBoundary);

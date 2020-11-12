@@ -105,12 +105,12 @@ public class TemperatureSeriesAnalysis {
         double closestValue = Double.POSITIVE_INFINITY;
         for (int i = 0; i < temperaturesQuantity(); i++) {
             double temp = (double) Array.get(temperatures, i);
-            if (Math.abs(temp - tempValue) <
-                    Math.abs(closestValue - tempValue)) {
+            if (Math.abs(temp - tempValue)
+                    < Math.abs(closestValue - tempValue)) {
                 closestValue = temp;
             }
-            else if (Math.abs(temp - tempValue) ==
-                    Math.abs(closestValue - tempValue)) {
+            else if (Math.abs(temp - tempValue)
+                    == Math.abs(closestValue - tempValue)) {
                 closestValue = Math.max(temp, closestValue);
             }
         }
