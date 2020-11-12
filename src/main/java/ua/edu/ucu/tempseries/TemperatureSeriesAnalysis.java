@@ -30,7 +30,7 @@ public class TemperatureSeriesAnalysis {
         }
         double sum = 0;
         for (int i = 0; i < temperaturesQuantity(); i++) {
-            sum += (double)Array.get(temperatures, i);
+            sum += (double) Array.get(temperatures, i);
         }
         return sum / temperaturesQuantity();
     }
@@ -42,7 +42,7 @@ public class TemperatureSeriesAnalysis {
         double quadrants = 0;
         double avg = average();
         for (int i = 0; i < temperaturesQuantity(); i++) {
-            quadrants += Math.pow((double)Array.get(temperatures, i) - avg, 2);
+            quadrants += Math.pow((double) Array.get(temperatures, i) - avg, 2);
         }
         return Math.sqrt(quadrants / temperaturesQuantity());
     }
@@ -51,17 +51,20 @@ public class TemperatureSeriesAnalysis {
         if (temperatures.length == 0) {
             throw new IllegalArgumentException();
         }
-        return (double)Array.get(findMinMax(temperatures, 0, temperaturesQuantity()-1), 0);
+        return (double) Array.get(findMinMax(temperatures, 0,
+                temperaturesQuantity()-1), 0);
     }
 
     public double max() {
         if (temperatures.length == 0) {
             throw new IllegalArgumentException();
         }
-        return (double)Array.get(findMinMax(temperatures, 0, temperaturesQuantity()-1), 1);
+        return (double) Array.get(findMinMax(temperatures, 0,
+                temperaturesQuantity()-1), 1);
     }
 
-    private static double[] findMinMax (double[] temperatures, int low, int high) {
+    private static double[] findMinMax(double[] temperatures,
+                                        int low, int high) {
         double min;
         double max;
         if (low == high) {
@@ -69,8 +72,8 @@ public class TemperatureSeriesAnalysis {
             return new double[]{min, min};
         }
         if (low == high - 1) {
-            min = (double)Array.get(temperatures, low);
-            max = (double)Array.get(temperatures, high);
+            min = (double) Array.get(temperatures, low);
+            max = (double) Array.get(temperatures, high);
             if (min < max) {
                 return new double[]{min, max};
             }
@@ -81,8 +84,10 @@ public class TemperatureSeriesAnalysis {
         int mid = (low + high) / 2;
         double[] left = findMinMax(temperatures, low, mid);
         double[] right = findMinMax(temperatures, mid + 1, high);
-        min = Math.min((double) Array.get(left, 0), (double) Array.get(right, 0));
-        max = Math.max((double) Array.get(left, 1), (double) Array.get(right, 1));
+        min = Math.min((double) Array.get(left, 0),
+                (double) Array.get(right, 0));
+        max = Math.max((double) Array.get(left, 1),
+                (double) Array.get(right, 1));
         return new double[]{min, max};
     }
 
@@ -99,11 +104,13 @@ public class TemperatureSeriesAnalysis {
         }
         double closestValue = Double.POSITIVE_INFINITY;
         for (int i = 0; i < temperaturesQuantity(); i++) {
-            double temp = (double)Array.get(temperatures, i);
-            if (Math.abs(temp - tempValue) < Math.abs(closestValue - tempValue)) {
+            double temp = (double) Array.get(temperatures, i);
+            if (Math.abs(temp - tempValue) <
+                    Math.abs(closestValue - tempValue)) {
                 closestValue = temp;
             }
-            else if (Math.abs(temp - tempValue) == Math.abs(closestValue - tempValue)) {
+            else if (Math.abs(temp - tempValue) ==
+                    Math.abs(closestValue - tempValue)) {
                 closestValue = Math.max(temp, closestValue);
             }
         }
@@ -120,13 +127,13 @@ public class TemperatureSeriesAnalysis {
 
     private double[][] findTempsGreaterAndLessThan(double tempValue) {
         double[] greaterValues = new double[temperatures.length];
-        Arrays.fill(greaterValues, -274.0);
+        Arrays.fill(greaterValues, lowerBoundary-1);
         double[] lessValues = new double[temperatures.length];
-        Arrays.fill(lessValues, -274.0);
+        Arrays.fill(lessValues, lowerBoundary-1);
         int i = 0;
         int j = 0;
-        for (int k = 0; k < temperaturesQuantity(); k ++) {
-            double temp = (double)Array.get(temperatures, k);
+        for (int k = 0; k < temperaturesQuantity(); k++) {
+            double temp = (double) Array.get(temperatures, k);
             if (temp >= tempValue) {
                 Array.set(greaterValues, i, temp);
                 i += 1;
@@ -136,12 +143,13 @@ public class TemperatureSeriesAnalysis {
                 j += 1;
             }
         }
-        if (ArrayUtils.indexOf(lessValues, -274.0) != -1) {
-            lessValues = Arrays.copyOfRange(lessValues, 0, ArrayUtils.indexOf(lessValues, -274.0));
+        if (ArrayUtils.indexOf(lessValues, lowerBoundary-1) != -1) {
+            lessValues = Arrays.copyOfRange(lessValues,
+                    0, ArrayUtils.indexOf(lessValues, lowerBoundary-1));
         }
-        if (ArrayUtils.indexOf(greaterValues, -274.0) != -1) {
+        if (ArrayUtils.indexOf(greaterValues, lowerBoundary-1) != -1) {
             greaterValues = Arrays.copyOfRange(greaterValues, 0,
-                    ArrayUtils.indexOf(greaterValues, -274.0));
+                    ArrayUtils.indexOf(greaterValues, lowerBoundary-1));
         }
         return new double[][]{lessValues, greaterValues};
     }
@@ -153,10 +161,10 @@ public class TemperatureSeriesAnalysis {
         return new TempSummaryStatistics(this);
     }
     private int temperaturesQuantity() {
-        if (ArrayUtils.indexOf(temperatures, -274.0) == -1) {
+        if (ArrayUtils.indexOf(temperatures, lowerBoundary-1) == -1) {
             return temperatures.length;
         }
-        return ArrayUtils.indexOf(temperatures, -274.0);
+        return ArrayUtils.indexOf(temperatures, lowerBoundary-1);
     }
 
     public int addTemps(double... temps) {
@@ -165,8 +173,12 @@ public class TemperatureSeriesAnalysis {
                 throw new InputMismatchException();
             }
         }
-        temperatures = TemperaturesArray.increaseArray(temperatures, temps.length);
-        int availableFrom = ArrayUtils.indexOf(temperatures, -274.0);
+        if (temperatures.length == 0) {
+            temperatures = new double[]{lowerBoundary-1};
+        }
+        temperatures = TemperaturesArray.increaseArray(temperatures,
+                temps.length, lowerBoundary-1);
+        int availableFrom = ArrayUtils.indexOf(temperatures, lowerBoundary-1);
         // add new temperatures
         for (double temp : temps) {
             Array.set(temperatures, availableFrom, temp);
